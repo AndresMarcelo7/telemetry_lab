@@ -19,7 +19,7 @@ services:
       - "9091:9090"
     command: --config.file=/etc/prometheus/prometheus.yaml
     volumes:
-      - /workspaces/telemetry_lab/python-telemetry-lab/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
     networks:
       - prometheus
   grafana:
@@ -30,6 +30,9 @@ services:
       - GF_AUTH_BASIC_ENABLED=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ${PWD}/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - /workspaces/telemetry_lab/python-telemetry-lab/grafana-data:/grafanas
     networks:
       - prometheus
   grafana-dashboards:
@@ -37,7 +40,7 @@ services:
     depends_on:
       - grafana
     volumes:
-      - /workspaces/telemetry_lab/python-telemetry-lab/grafana-data:/grafana
+      - ./grafana-data:/grafana
     command: >
       /bin/sh -c "
         apk add --no-cache curl
