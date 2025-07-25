@@ -10,7 +10,7 @@
   // List of ports that you want to preview
   "forwardPorts": [81, 3000],
   // Automatically start the app in subsequent sessions
-  "postStartCommand": ". ../setup.sh",
+  "postStartCommand": "./setup.sh",
   // Privileged flag is needed to run docker-in-docker, the volume
   // is needed or docker build will fail
   "runArgs": [ "--platform=linux/amd64","--add-host=host.docker.internal:host-gateway","--privileged"],
