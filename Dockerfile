@@ -1,4 +1,4 @@
-FROM alpine:3.15.4
+FROM alpine:latest
 
 RUN apk update
 RUN apk add --no-cache git
@@ -10,3 +10,6 @@ EXPOSE 8000
 EXPOSE 35729
 EXPOSE 3000
 EXPOSE 1313
+EXPOSE 81
+EXPOSE 9091
+EXPOSE 3000
