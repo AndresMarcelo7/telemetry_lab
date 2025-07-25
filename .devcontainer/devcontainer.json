@@ -6,7 +6,7 @@
     { "source": "/var/run/docker.sock", "target": "/var/run/docker.sock", "type": "bind" },
   ],
   // Your code path from the .devcontainer directory
-  "workspaceFolder": "telemetry_lab",
+  "workspaceFolder": "${localWorkspaceFolder}",
   // List of ports that you want to preview
   "forwardPorts": [81, 3000],
   // Automatically start the app in subsequent sessions
