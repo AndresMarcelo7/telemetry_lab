@@ -6,7 +6,7 @@
     { "source": "/var/run/docker.sock", "target": "/var/run/docker.sock", "type": "bind" },
   ],
   // Your code path from the .devcontainer directory
-  "workspaceFolder": "../python-telemetry-lab",
+  "workspaceFolder": "~/workspaces/telemetry_lab",
   // List of ports that you want to preview
   "forwardPorts": [81, 3000],
   // Automatically start the app in subsequent sessions
@@ -14,5 +14,5 @@
   // Privileged flag is needed to run docker-in-docker, the volume
   // is needed or docker build will fail
   "runArgs": [ "--platform=linux/amd64","--add-host=host.docker.internal:host-gateway","--privileged"],
-  "postCreateCommand": "docker-compose up -d"
+  "postCreateCommand": "cd python-telemetry-lab && docker-compose up -d"
 }
