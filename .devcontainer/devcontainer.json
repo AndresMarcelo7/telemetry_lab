@@ -10,9 +10,9 @@
   // List of ports that you want to preview
   "forwardPorts": [1234, 5678,8888,8889],
   // Automatically start the app in subsequent sessions
-  "postStartCommand": "cd python-telemetry-lab && docker-compose up -d",
+  //"postStartCommand": "cd python-telemetry-lab && docker-compose up -d",
   // Privileged flag is needed to run docker-in-docker, the volume
   // is needed or docker build will fail
   "runArgs": [ "--platform=linux/amd64","--add-host=host.docker.internal:host-gateway","--privileged"],
-  //  "postCreateCommand": ". /app/scripts/codespaces.sh"
+  "postCreateCommand": "cd python-telemetry-lab && docker-compose up -d"
 }
