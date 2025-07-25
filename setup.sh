@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cd python-telemetry-lab
 dockerd &
 sleep 5
