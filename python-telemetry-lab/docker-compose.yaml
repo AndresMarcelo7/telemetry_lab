@@ -2,6 +2,7 @@ networks:
   prometheus:
     name: prometheus
     driver: bridge
+
 services:
   python-application:
     build:
@@ -9,9 +10,10 @@ services:
     container_name: python-application
     image: python-application
     ports:
-      - "81:5000"
+      - "80:5000"
     networks:
       - prometheus
+
   prometheus:
     container_name: prometheus-svc
     build:
@@ -22,6 +24,33 @@ services:
     command: --config.file=/etc/prometheus/prometheus.yaml
     networks:
       - prometheus
+
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: loki
+    command: -config.file=/etc/loki/loki.yaml
+    volumes:
+      - ./loki-data/loki.yaml:/etc/loki/loki.yaml
+    ports:
+      - "3100:3100"
+      - "9096:9096"
+    networks:
+      - prometheus
+
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./loki-data/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+    networks:
+      - prometheus
+
+
   grafana:
     image: grafana/grafana:11.6.1
     ports:
@@ -30,8 +59,11 @@ services:
       - GF_AUTH_BASIC_ENABLED=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./grafana-data:/etc/grafana/provisioning/datasources
     networks:
       - prometheus
+
   grafana-dashboards:
     build:
       context: .
