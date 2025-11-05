@@ -14,6 +14,16 @@ services:
     networks:
       - prometheus
 
+  java-application:
+    build:
+      context: java-application
+      dockerfile: dockerfile
+    container_name: java-application
+    ports:
+      - "8080:8080"
+    networks:
+      - prometheus
+
   prometheus:
     container_name: prometheus-svc
     build:
