@@ -7,8 +7,8 @@ services:
   python-application:
     build:
       context: python-application
+      dockerfile: dockerfile
     container_name: python-application
-    image: python-application
     ports:
       - "80:5000"
     networks:
