@@ -69,22 +69,14 @@ services:
       - GF_AUTH_BASIC_ENABLED=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
-      - ./grafana-data:/etc/grafana/provisioning/datasources
+      - grafana-storage:/var/lib/grafana
+      - ./grafana-data/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./grafana-data/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./grafana-data/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
     networks:
       - prometheus
 
-  grafana-dashboards:
-    build:
-      context: .
-      dockerfile: grafana-dashboards.Dockerfile
-    depends_on:
-      - grafana
-    command: >
-      /bin/sh -c "
-        echo 'waiting for grafana'
-        sleep 10s
-        curl --request POST http://grafana:3000/api/datasources --header 'Content-Type: application/json' -d @datasources.json
-        curl --request POST http://grafana:3000/api/dashboards/db --header 'Content-Type: application/json' -d @dashboard.json"
-    networks:
-      - prometheus
+volumes:
+  grafana-storage:
