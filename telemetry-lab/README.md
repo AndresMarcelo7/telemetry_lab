@@ -51,7 +51,7 @@ Los dashboards que crees en Grafana se guardan automáticamente en el volumen Do
 El proyecto incluye un dashboard provisionado automáticamente:
 - **Nombre**: "Application Telemetry (Prometheus)"
 - **Secciones**: Python y Java
-- **Ubicación**: `./grafana-data/dashboard.json`
+- **Ubicación**: `./grafana-data/sample_dashboard.json`
 
 Este dashboard **siempre se carga** al iniciar, incluso después de `docker-compose down -v`.
 
@@ -59,13 +59,13 @@ Este dashboard **siempre se carga** al iniciar, incluso después de `docker-comp
 
 ```
 telemetry-lab/
-├── grafana-data/           # Configuración de Grafana
-│   ├── datasources.yaml    # Prometheus y Loki
-│   ├── dashboards.yaml     # Config de provisioning
-│   └── dashboard.json      # Dashboard base
-├── python-application/     # App Flask con métricas
-├── java-application/       # App Spring Boot con métricas
-└── docker-compose.yaml     # Orquestación de servicios
+├── grafana-data/               # Configuración de Grafana
+│   ├── datasources.yaml        # Prometheus y Loki
+│   ├── dashboards.yaml         # Config de provisioning
+│   └── sample_dashboard.json   # Dashboard base
+├── python-application/         # App Flask con métricas
+├── java-application/           # App Spring Boot con métricas
+└── docker-compose.yaml         # Orquestación de servicios
 ```
 
 ## 🎯 Workflow típico

@@ -74,7 +74,7 @@ services:
       - grafana-storage:/var/lib/grafana
       - ./grafana-data/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./grafana-data/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-      - ./grafana-data/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
+      - ./grafana-data/sample_dashboard.json:/var/lib/grafana/dashboards/sample_dashboard.json
     networks:
       - prometheus
 
