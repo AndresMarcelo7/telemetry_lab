@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api")
@@ -18,33 +19,45 @@ public class UrlController {
 
     private static final Logger logger = LoggerFactory.getLogger(UrlController.class);
     private final UrlShortenerService urlShortenerService;
+    private final Random random = new Random();
 
     public UrlController(UrlShortenerService urlShortenerService) {
         this.urlShortenerService = urlShortenerService;
     }
 
-    /**
-     * Endpoint raíz para verificar que el servicio está activo
-     */
+    private boolean shouldFail() {
+        return random.nextInt(100) < 10;
+    }
+
+    private void maybeFail(String endpointName) {
+        if (shouldFail()) {
+            RuntimeException ex = new RuntimeException("Unexpected failure in " + endpointName);
+            logger.error("Failure in {}: {}", endpointName, ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
     @GetMapping("/")
     public ResponseEntity<Map<String, String>> home() {
         logger.info("Home endpoint accessed");
         return ResponseEntity.ok(Map.of(
-            "message", "URL Shortener Service",
-            "version", "1.0.0",
-            "status", "running"
+                "message", "URL Shortener Service",
+                "version", "1.0.0",
+                "status", "running"
         ));
     }
 
-    /**
-     * Endpoint para acortar una URL
-     * POST /api/shorten
-     * Body: { "url": "https://example.com", "customCode": "optional" }
-     */
     @PostMapping("/shorten")
     public ResponseEntity<?> shortenUrl(@RequestBody ShortenRequest request) {
         logger.info("Received shorten request for URL: {}", request.getUrl());
-        
+
+        try {
+            maybeFail("POST /shorten");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Internal service error"));
+        }
+
         if (request.getUrl() == null || request.getUrl().isEmpty()) {
             logger.warn("Empty URL provided");
             return ResponseEntity.badRequest()
@@ -53,17 +66,17 @@ public class UrlController {
 
         try {
             UrlMapping mapping = urlShortenerService.shortenUrl(
-                    request.getUrl(), 
+                    request.getUrl(),
                     request.getCustomCode()
             );
-            
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
-                        "shortCode", mapping.getShortCode(),
-                        "originalUrl", mapping.getOriginalUrl(),
-                        "shortUrl", "/api/" + mapping.getShortCode(),
-                        "createdAt", mapping.getCreatedAt().toString()
+                            "shortCode", mapping.getShortCode(),
+                            "originalUrl", mapping.getOriginalUrl(),
+                            "shortUrl", "/api/" + mapping.getShortCode(),
+                            "createdAt", mapping.getCreatedAt().toString()
                     ));
+
         } catch (IllegalArgumentException e) {
             logger.error("Error shortening URL: {}", e.getMessage());
             return ResponseEntity.badRequest()
@@ -71,14 +84,10 @@ public class UrlController {
         }
     }
 
-    /**
-     * Endpoint para redirigir desde un código corto
-     * GET /api/{shortCode}
-     */
     @GetMapping("/{shortCode}")
     public RedirectView redirect(@PathVariable String shortCode) {
         logger.info("Redirect request for short code: {}", shortCode);
-        
+        maybeFail("GET /{shortCode}");
         return urlShortenerService.getOriginalUrl(shortCode)
                 .map(mapping -> {
                     RedirectView redirectView = new RedirectView(mapping.getOriginalUrl());
@@ -92,42 +101,17 @@ public class UrlController {
                 });
     }
 
-    /**
-     * Endpoint para obtener información de una URL acortada
-     * GET /api/info/{shortCode}
-     */
-    @GetMapping("/info/{shortCode}")
-    public ResponseEntity<?> getUrlInfo(@PathVariable String shortCode) {
-        logger.info("Info request for short code: {}", shortCode);
-        
-        return urlShortenerService.getOriginalUrl(shortCode)
-                .map(mapping -> ResponseEntity.ok(Map.of(
-                    "shortCode", mapping.getShortCode(),
-                    "originalUrl", mapping.getOriginalUrl(),
-                    "createdAt", mapping.getCreatedAt().toString(),
-                    "accessCount", mapping.getAccessCount()
-                )))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Short code not found: " + shortCode)));
-    }
-
-    /**
-     * Endpoint para obtener todas las URLs (útil para debugging)
-     * GET /api/urls
-     */
     @GetMapping("/urls")
     public ResponseEntity<Map<String, UrlMapping>> getAllUrls() {
         logger.info("Request to get all URLs");
+
+        try {
+            maybeFail("GET /urls");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
         return ResponseEntity.ok(urlShortenerService.getAllUrls());
     }
 
-    /**
-     * Endpoint para obtener estadísticas del servicio
-     * GET /api/stats
-     */
-    @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getStats() {
-        logger.info("Stats endpoint accessed");
-        return ResponseEntity.ok(urlShortenerService.getStats());
-    }
 }

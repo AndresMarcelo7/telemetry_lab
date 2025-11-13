@@ -4,19 +4,18 @@ Acortador de URLs básico implementado con Spring Boot 3.2, Gradle y persistenci
 
 ## Características
 
-- ✂️ Acortamiento de URLs con códigos aleatorios de 6 caracteres
-- 🎯 Códigos personalizados opcionales
-- 📊 Métricas con Prometheus y Micrometer
-- 🔍 Observabilidad completa con Spring Boot Actuator
-- 📝 Logging estructurado para Promtail/Loki
-- 💾 Persistencia en memoria con ConcurrentHashMap (thread-safe)
-- 🚀 Estadísticas de uso y contador de accesos
+- Acortamiento de URLs con códigos aleatorios de 6 caracteres
+- Códigos personalizados opcionales
+- Métricas con Prometheus y Micrometer
+- Observabilidad completa con Spring Boot Actuator
+- Logging estructurado para Promtail/Loki
+- Persistencia en memoria con ConcurrentHashMap (thread-safe)
 
 ## Tecnologías
 
 - **Java 21**
 - **Spring Boot 3.2.0**
-- **Gradle 8.5**
+- **Gradle 8.7**
 - **Micrometer + Prometheus**
 - **Spring Boot Actuator**
 - **Lombok**
@@ -61,7 +60,7 @@ cd src
 
 ### Docker
 ```bash
-docker build -t java-application -f dockerfile .
+docker build -t java-application -f Dockerfile .
 docker run -p 8080:8080 java-application
 ```
 
@@ -113,12 +112,12 @@ La aplicación está diseñada para integrarse con:
 
 ```
 java-application/
-├── dockerfile              # Multi-stage Dockerfile con Gradle
+├── Dockerfile              # Multi-stage Dockerfile con Gradle
 ├── deployment.yaml         # Deployment y Service de Kubernetes
-├── README.md              # Esta documentación
+├── README.md               # Esta documentación
+├── build.gradle            # Configuración de Gradle
+├── settings.gradle         # Configuración del proyecto
 └── src/
-    ├── build.gradle       # Configuración de Gradle
-    ├── settings.gradle    # Configuración del proyecto
     └── main/
         ├── java/com/telemetry/urlshortener/
         │   ├── UrlShortenerApplication.java      # Clase principal

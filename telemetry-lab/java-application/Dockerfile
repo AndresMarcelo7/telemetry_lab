@@ -3,8 +3,8 @@ FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 
 # Copiar archivos de configuración de Gradle
-COPY ./src/build.gradle ./build.gradle
-COPY ./src/settings.gradle ./settings.gradle
+COPY ./build.gradle ./build.gradle
+COPY ./settings.gradle ./settings.gradle
 
 # Copiar código fuente en la estructura correcta
 COPY ./src/main ./src/main
