@@ -7,7 +7,7 @@ services:
   java-application:
     build:
       context: java-application
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     container_name: java-application
     ports:
       - "8080:8080"
@@ -17,7 +17,6 @@ services:
   prometheus:
     container_name: prometheus-svc
     build:
-      context: telemetry-lab
       dockerfile: prometheus.Dockerfile
     ports: 
       - "9091:9090"
