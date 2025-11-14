@@ -16,10 +16,11 @@ services:
 
   prometheus:
     container_name: prometheus-svc
-    build:
-      dockerfile: prometheus.Dockerfile
+    image: prom/prometheus:v3.3.0
     ports: 
       - "9091:9090"
+    volumes:
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     command: --config.file=/etc/prometheus/prometheus.yaml
     networks:
       - prometheus
@@ -49,7 +50,6 @@ services:
     networks:
       - prometheus
 
-
   grafana:
     image: grafana/grafana:11.6.1
     ports:
@@ -62,8 +62,6 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana-data/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-      - ./grafana-data/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-      - ./grafana-data/sample_dashboard.json:/var/lib/grafana/dashboards/sample_dashboard.json
     networks:
       - prometheus
 
