@@ -1,8 +1,44 @@
 # Telemetry Lab
 
-Stack de observabilidad con Prometheus, Grafana y Loki para aplicaciones Java.
+Stack de observabilidad con **Prometheus**, **Grafana** y **Loki**, acompañado de una aplicación Java (Spring Boot) que implementa un servicio de acortamiento de URLs.
 
-## Iniciar todo
+Este laboratorio te permitirá observar métricas reales, logs y comportamientos de un sistema en ejecución.
+
+## Comprendiendo el dominio de la aplicación URL Shortener
+
+La aplicación utilizada en este laboratorio implementa un servicio básico de **acortamiento de URLs**, un patrón ampliamente utilizado en plataformas web. Para comprender su comportamiento y poder analizar métricas y logs de forma adecuada, es importante entender los componentes fundamentales del dominio.
+
+---
+
+### Creación de URLs acortadas
+Los usuarios pueden enviar una URL original y, opcionalmente, un código corto personalizado.  
+Cuando esto ocurre, la aplicación:
+
+- Valida que la URL sea válida.
+- Genera un código corto aleatorio si no se proporciona uno.
+- Asegura que el código corto no exista previamente.
+- Almacena la relación `{shortCode → originalUrl}` junto con un timestamp.
+---
+
+### Redirección mediante shortCode
+Cuando un cliente accede a `GET /api/{shortCode}`, la aplicación:
+
+- Busca el código corto en el almacenamiento en memoria.
+- Si existe redirige a la URL original.
+- Si no existe responde con un estado de error.
+---
+
+### Almacenamiento temporal en memoria
+La aplicación almacena toda la información en una estructura en memoria.  
+Esto implica que:
+
+- Los datos existen solo mientras la aplicación esté activa.
+- El almacenamiento no persiste entre reinicios.
+- El tamaño del almacenamiento depende exclusivamente de las solicitudes recibidas.
+---
+
+## Iniciar ambiente local
+
 
 ```bash
 docker-compose up -d
@@ -12,7 +48,54 @@ docker-compose up -d
 
 - **Grafana**: http://localhost:3000
 - **Prometheus**: http://localhost:9091
-- **Java App**: http://localhost:8080
+- **Java App**: http://localhost
+
+##  Endpoints de la aplicación URL Shortener
+
+La aplicación expone una API REST simple con los siguientes endpoints:
+
+### Lista de Endpoints
+
+1. **`GET /api/`** – Información básica sobre el servicio.
+
+2. **`POST /api/shorten`** – Crea una URL acortada.  
+   Body esperado:
+   ```json
+   {
+     "url": "https://ejemplo.com",
+     "customCode": "opcional"
+   }
+   ```
+
+3. **`GET /api/{shortCode}`** – Redirige a la URL original asociada.
+
+4. **`GET /api/urls`** – Devuelve todas las URLs almacenadas.
+
+---
+
+## Cómo generar tráfico de forma rápida
+
+### 🧪 Con `curl`
+
+```bash
+curl -X POST http://localhost/api/shorten   -H "Content-Type: application/json"   -d '{"url": "https://google.com"}'
+```
+
+```bash
+curl -I http://localhost/api/abc123
+```
+
+```bash
+curl http://localhost/api/urls
+```
+
+---
+
+### Con navegador
+- Abre `http://localhost/api/`
+- Visita: `http://localhost/api/{codigo}`
+
+---
 
 ## Comandos útiles
 
@@ -45,23 +128,12 @@ Los dashboards que crees en Grafana se guardan automáticamente en el volumen Do
 - Tus dashboards sobreviven a `docker-compose down` y `docker-compose up`
 - Se pierden solo con `docker-compose down -v` (elimina volúmenes)
 
-## Dashboard Base
-
-El proyecto incluye un dashboard provisionado automáticamente:
-- **Nombre**: "Application Telemetry (Prometheus)"
-- **Secciones**: Java
-- **Ubicación**: `./grafana-data/sample_dashboard.json`
-
-Este dashboard **siempre se carga** al iniciar, incluso después de `docker-compose down -v`.
-
 ## Estructura
 
 ```
 telemetry-lab/
 ├── grafana-data/               # Configuración de Grafana
 │   ├── datasources.yaml        # Prometheus y Loki
-│   ├── dashboards.yaml         # Config de provisioning
-│   └── sample_dashboard.json   # Dashboard base
 ├── java-application/           # App Spring Boot con métricas
 ├── loki-data/                  # Config de loki para recoleccion de logs
 └── docker-compose.yaml         # Orquestación de servicios
