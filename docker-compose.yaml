@@ -61,7 +61,6 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./grafana-data/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     networks:
       - prometheus
 
