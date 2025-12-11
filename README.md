@@ -132,8 +132,6 @@ Los dashboards que crees en Grafana se guardan automáticamente en el volumen Do
 
 ```
 telemetry-lab/
-├── grafana-data/               # Configuración de Grafana
-│   ├── datasources.yaml        # Prometheus y Loki
 ├── java-application/           # App Spring Boot con métricas
 ├── loki-data/                  # Config de loki para recoleccion de logs
 └── docker-compose.yaml         # Orquestación de servicios
