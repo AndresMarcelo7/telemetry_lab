@@ -1,6 +1,6 @@
 networks:
-  prometheus:
-    name: prometheus
+  telemetry:
+    name: telemetry
     driver: bridge
 
 services:
@@ -12,7 +12,7 @@ services:
     ports:
       - "80:8080"
     networks:
-      - prometheus
+      - telemetry
 
   prometheus:
     container_name: prometheus-svc
@@ -23,7 +23,7 @@ services:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     command: --config.file=/etc/prometheus/prometheus.yaml
     networks:
-      - prometheus
+      - telemetry
 
   loki:
     image: grafana/loki:2.9.4
@@ -35,7 +35,7 @@ services:
       - "3100:3100"
       - "9096:9096"
     networks:
-      - prometheus
+      - telemetry
 
   promtail:
     image: grafana/promtail:2.9.4
@@ -48,7 +48,7 @@ services:
     depends_on:
       - loki
     networks:
-      - prometheus
+      - telemetry
 
   grafana:
     image: grafana/grafana:11.6.1
@@ -62,7 +62,7 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
     networks:
-      - prometheus
+      - telemetry
 
 volumes:
   grafana-storage:
