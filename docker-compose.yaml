@@ -26,7 +26,7 @@ services:
       - telemetry
 
   loki:
-    image: grafana/loki:2.9.4
+    image: grafana/loki:3.0.0
     container_name: loki
     command: -config.file=/etc/loki/loki.yaml
     volumes:
@@ -38,7 +38,7 @@ services:
       - telemetry
 
   promtail:
-    image: grafana/promtail:2.9.4
+    image: grafana/promtail:3.0.0
     container_name: promtail
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
